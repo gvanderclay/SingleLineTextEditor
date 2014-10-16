@@ -1,0 +1,10 @@
+package project4;
+
+public class CLinkedList {
+	private CNode top;
+
+	public CLinkedList(){
+	}
+	
+	
+}

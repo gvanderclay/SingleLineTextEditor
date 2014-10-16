@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<section name="Workbench">
+	<section name="org.eclipse.ui.texteditor.FindReplaceDialog_dialogBounds">
+		<item value="291" key="DIALOG_WIDTH"/>
+		<item value="84" key="DIALOG_Y_ORIGIN"/>
+		<item value="871" key="DIALOG_X_ORIGIN"/>
+		<item value="470" key="DIALOG_HEIGHT"/>
+		<item value="1|Cantarell|11.0|0|GTK|1|" key="DIALOG_FONT_NAME"/>
+	</section>
+	<section name="org.eclipse.ui.texteditor.FindReplaceDialog">
+		<item value="true" key="wrap"/>
+		<item value="false" key="casesensitive"/>
+		<item value="false" key="isRegEx"/>
+		<item value="false" key="incremental"/>
+		<item value="false" key="wholeword"/>
+		<item value="&quot;Invalid input&quot;" key="selection"/>
+		<list key="findhistory">
+			<item value="&quot;Invalid Input&quot;"/>
+			<item value="&quot;a&quot;"/>
+			<item value="invali"/>
+			<item value="last"/>
+			<item value="catch"/>
+			<item value="current"/>
+			<item value="Node"/>
+			<item value="String"/>
+		</list>
+		<list key="replacehistory">
+			<item value="temp"/>
+			<item value="CNode"/>
+		</list>
+	</section>
+	<section name="org.eclipse.ui.texteditor.GotoLineAction$GotoLineDialog_dialogBounds">
+		<item value="258" key="DIALOG_Y_ORIGIN"/>
+		<item value="406" key="DIALOG_X_ORIGIN"/>
+	</section>
+</section>

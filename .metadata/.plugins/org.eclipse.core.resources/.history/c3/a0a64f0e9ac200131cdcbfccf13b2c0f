@@ -1,0 +1,43 @@
+package project4;
+
+public class CNode {
+
+	public LinkedList data;
+	public CNode next;
+	public CNode prev;
+	public int index;
+	
+	public CNode(LinkedList data, CNode next, CNode prev) {
+		this.data = data;
+		this.next = next;
+		this.prev = prev;
+	}
+
+	public CNode() {
+	}
+	
+	public LinkedList getData() {
+		return data;
+	}
+
+	public void setData(LinkedList data) {
+		this.data = data;
+	}
+
+	public CNode getNext() {
+		return next;
+	}
+
+	public void setNext(CNode next) {
+		this.next = next;
+	}
+
+	public CNode getPrev() {
+		return prev;
+	}
+
+	public void setPrev(CNode prev) {
+		this.prev = prev;
+	}
+	
+}

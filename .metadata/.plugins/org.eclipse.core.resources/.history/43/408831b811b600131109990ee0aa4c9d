@@ -1,0 +1,70 @@
+package project4;
+
+public class LinkedList {
+	private Node top;
+	private Node current;
+
+	public LinkedList() {
+		this.top = null;
+		this.current = top;
+	}
+
+	public void insertBeforeCurrent(String data) {
+		Node temp = new Node(data, null, null);
+
+		// no list
+		if (top == null) {
+			top = temp;
+		}
+
+		else if (current == top) {
+			current.setPrev(temp);
+			temp.setNext(current);
+			top = temp;
+		}
+
+		else {
+			current.setPrev(temp);
+			temp.setNext(current);
+		}
+		current = temp;
+	}
+
+	public void insertAfterCurrent(String data) {
+		Node temp = new Node(data, null, null);
+
+		// no list
+		if (top == null) {
+			top = temp;
+		} else {
+			temp.setPrev(current);
+			temp.setNext(current.getNext());
+			current.setNext(temp);
+			temp.getNext().setPrev(temp);
+		}
+		current = temp;
+	}
+
+	public void display() {
+		Node temp = top;
+		int lineNumber = 0;
+
+		while (temp != null) {
+			if (temp == current) {
+				System.out.println(lineNumber++ + ": " + ">" + temp.getData());
+			} else {
+				System.out.println(lineNumber++ + ": " + temp.getData());
+			}
+			temp = temp.getNext();
+		}
+	}
+
+	public static void main(String[] args) {
+		LinkedList list = new LinkedList();
+		list.insertAfterCurrent("dick");
+		list.insertBeforeCurrent("balls");
+		list.insertBeforeCurrent("bigballs");
+		list.insertAfterCurrent("dick");
+		list.display();
+	}
+}

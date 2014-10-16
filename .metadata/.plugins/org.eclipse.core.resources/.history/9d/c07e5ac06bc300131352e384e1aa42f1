@@ -1,0 +1,305 @@
+package project4;
+
+import java.util.Scanner;
+
+public class Editor implements IEditor {
+
+	LinkedList<String> list = new LinkedList<String>();
+	LinkedList<LinkedList> clipBoard = new LinkedList<LinkedList>();
+
+	@SuppressWarnings({ "unchecked", "unchecked", "unchecked" })
+	@Override
+	public void processCommand(String command) {
+		if (command.equals("")) {
+			System.out.println("There was no command");
+			return;
+		}
+		char input;
+		String data;
+		if (command.length() >= 3 && command.charAt(0) == 'c' && command.charAt(1) == 'u'
+				&& command.charAt(2) == 't') {
+			input = 'n';
+			data = command.substring(3).trim();
+		} else if (command.length() >= 3 &&  command.charAt(0) == 'p' && command.charAt(1) == 'a'
+				&& command.charAt(2) == 's') {
+			input = 'p';
+			data = command.substring(3).trim();
+		} else {
+			input = command.charAt(0);
+			data = command.substring(1).trim();
+		}
+		switch (input) {
+		case 'b':
+			list.insertBeforeCurrent(data);
+			break;
+		case 'i':
+			list.insertAfterCurrent(data);
+			break;
+		case 'e':
+			list.insertAfterLast(data);
+		case 'm':
+			int n = 1;
+			try {
+				n = Integer.parseInt(data);
+			} catch (NumberFormatException e) {
+				n = 1;
+			}
+			for (int i = 0; i < n; i++) {
+				list.moveCurrentDown();
+			}
+			break;
+		case 'u':
+			n = 1;
+			try {
+				n = Integer.parseInt(data);
+			} catch (NumberFormatException e) {
+				n = 1;
+			}
+			for (int i = 0; i < n; i++) {
+				list.moveCurrentUp();
+			}
+			break;
+		case 'r':
+			n = 1;
+			try {
+				n = Integer.parseInt(data);
+			} catch (NumberFormatException e) {
+				n = 1;
+			}
+			for (int i = 0; i < n; i++) {
+				list.removeCurrent();
+			}
+			break;
+		case 'd':
+			if (data.equals("")) {
+				list.display();
+			} else {
+				String[] strAry = data.split(" ");
+				int[] index = new int[strAry.length];
+				try {
+					for (int i = 0; i < strAry.length; i++) {
+						index[i] = Integer.parseInt(strAry[i]);
+					}
+				} catch (NumberFormatException e) {
+					System.out.println("Invalid input");
+					break;
+				}
+				if (index.length == 2) {
+					list.display(index[0], index[1]);
+				} else if (index.length == 1) {
+					list.display(index[0], index[0]);
+				} else if (index.length > 2) {
+					System.out.println("Can only display between two numbers");
+				}
+			}
+			break;
+		case 'c':
+			if (list.isSaved()) {
+				list.clearAll();
+			} else {
+				System.out.println("The file is not saved");
+			}
+			break;
+		case 's':
+			if (data.trim().equals("")) {
+				System.out.println("Must save under a name");
+			} else
+				list.save(data);
+			break;
+		case 'l':
+			if (list.isSaved()) {
+				if (data.trim().equals("")) {
+					System.out.println("Must input a file to load");
+				} else {
+					list.load(data);
+				}
+			} else {
+				System.out.println("Current file isn't saved");
+			}
+			break;
+		case 'h':
+			displayHelp();
+			break;
+		case 'x':
+			if (list.isSaved()) {
+				System.exit(0);
+			} else
+				System.out.println("Current file isn't saved");
+			break;
+		case 'n':
+			if (data.equals("")) {
+				System.out.println("Must choose lines to cut");
+			} else {
+				String[] strAry = data.split(" ");
+				int[] parts = new int[strAry.length];
+				try {
+					for (int i = 0; i < strAry.length; i++) {
+						parts[i] = Integer.parseInt(strAry[i]);
+						if(parts[i] < 0){
+							System.out.println("All numbers must be 0 or greater");
+							return;
+						}
+					}
+				} catch (NumberFormatException e) {
+					System.out.println("Invalid input");
+					break;
+				}
+				if (parts[1] > parts[0]) {
+					if (parts.length == 3) {
+						LinkedList<String> temp = new LinkedList<String>();
+						temp.setIndex(parts[2]);
+						for (int i = parts[0]; i <= parts[1]; i++) {
+							temp.insertAfterLast(list.getLine(parts[0]));
+							System.out.println(list.getLine(parts[0]));
+							list.removeLine(parts[0]);
+						}
+						if (clipBoard.getTop() == null) {
+							clipBoard.insertAfterCurrent(temp);
+						} else {
+							Node<LinkedList> indexNode = clipBoard.getTop();
+							if (indexNode.getNext() == null) {
+								if (indexNode.getData().getIndex() == parts[2]) {
+									indexNode.setData(temp);
+									return;
+								}
+							} else {
+								while (indexNode.getNext() != null) {
+									if (indexNode.getData().getIndex() == parts[2]) {
+										indexNode.setData(temp);
+										return;
+									} else {
+										clipBoard.insertAfterCurrent(temp);
+									}
+								}
+							}
+						}
+
+					}
+				} else {
+					System.out
+							.println("Starting number must be > ending number");
+				}
+			}
+			break;
+		case 'p':
+
+			/*
+			 * node that will be used to store data that is going into the main
+			 * list
+			 */
+			Node<String> temp = null;
+			// if the user didn't specify a clipboard to paste
+			if (data.equals("")) {
+				System.out.println("Must choose a clipboard to paste");
+			} else {
+				// number of the clipboard being looked for
+				int clipNum;
+				try {
+					clipNum = Integer.parseInt(data);
+				} catch (NumberFormatException e) {
+					System.out.println("That isn't a number");
+					return;
+				}
+				// node that checks the clipboard
+				Node<LinkedList> position = clipBoard.getTop();
+				// keeps track of what line of the clipboard we are on
+				int index = 0;
+				if(position == null){
+					System.out.println("There are no clipboards");
+					return;
+				}
+				while (position.getData().getIndex() != clipNum) {
+					if (position.getNext() == null) {
+						System.out.println("That clipboard doesn't exist");
+						return;
+					} else {
+						position = position.getNext();
+						index++;
+					}
+				}
+				temp = position.getData().getTop();
+				if (temp == null) {
+					System.out.println("That clipboard doesn't exist");
+				} else {
+					int i = 0;
+					while (temp.getNext() != null) {
+						list.insertBeforeCurrent((String) position.getData()
+								.getLine(i));
+						list.moveCurrentDown();
+						temp = temp.getNext();
+						i++;
+					}
+					list.insertBeforeCurrent((String) position.getData()
+							.getLine(i));
+					clipBoard.removeLine(index);
+				}
+			}
+			break;
+		default:
+			System.out.println("Command not recognized");
+		}
+	}
+
+	@Override
+	public String getLine(int lineNbr) {
+		return list.getLine(lineNbr);
+	}
+
+	@Override
+	public String getCurrentLine() {
+		return list.getCurrent();
+	}
+
+	private void displayHelp() {
+		System.out.println("Command \t Meaning");
+		System.out.println("b <sentence> \t Insert sentence before "
+				+ "the current line; make the inserted line the current line");
+		System.out.println("i <sentence> \t Insert sentence after "
+				+ "the current line; make the inserted line the current line");
+		System.out
+				.println("m \t\t Move current line indicator down 1 position");
+		System.out
+				.println("m # \t\t Move current line indicator down # positions");
+		System.out.println("u \t\t Move current line indicator up 1 position");
+		System.out
+				.println("u # \t\t Move current line indicator up # positions");
+		System.out
+				.println("r \t\t Remove the current line;"
+						+ "make the next line the current line, if there is a\n\t\t next line;"
+						+ " otherwise make the previous line the current line, "
+						+ "if there is a previous line");
+		System.out
+				.println("r # \t\t Remove # lines starting at the current line; make the next line the current line,\n\t\t if"
+						+ "there is a next line; otherwise make the previous line the current line.");
+		System.out
+				.println("d \t\t Display all lines in the buffer/file with line numbers");
+		System.out
+				.println("d # * \t\t Display from line # to * (inclusive) in the buffer/file with line numbers");
+		System.out
+				.println("c \t\t Clear (remove) all lines in the buffer/file; "
+						+ "set current line indicator appropriately");
+
+		System.out
+				.println("s <filename> \t Save the contents to the specified text file");
+		System.out
+				.println("l <filename> \t Load the contents of the specified text file into editor buffer replacing the current "
+						+ "contents;\n\t\t make the first line the current line");
+		System.out.println("h \t\t Display a help page of editor commands");
+		System.out.println("x \t\t Exit the editor");
+		System.out
+				.println("cut # $ * \t Cut lines from the file from # to $ into clipboard *, and append onto an internal "
+						+ "clipboard *");
+		System.out
+				.println("pas * \t\t Paste Clipboard * before the current line position");
+	}
+
+	public static void main(String[] args) {
+		Editor e = new Editor();
+		e.displayHelp();
+		while (true) {
+			Scanner s = new Scanner(System.in);
+			String input = s.nextLine();
+			e.processCommand(input);
+		}
+	}
+}

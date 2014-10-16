@@ -1,0 +1,21 @@
+package project4;
+
+import static org.junit.Assert.*;
+
+import org.junit.Test;
+
+public class EditorTesting {
+
+	@Test
+	public void testProcessCommandRemove() throws Exception {
+	Editor ed = new Editor();
+	ed.processCommand("i Line 0");
+	ed.processCommand("i Line 1");
+	ed.processCommand("i Line 2");
+	ed.processCommand("i Line 3");
+	ed.processCommand("u 2");
+	ed.processCommand("r 2");
+	assertTrue("Line 3".equals(ed.getCurrentLine()));
+	}
+
+}

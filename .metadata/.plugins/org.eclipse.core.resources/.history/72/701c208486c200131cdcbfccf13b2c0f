@@ -1,0 +1,367 @@
+package project4;
+
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.util.Scanner;
+
+public class LinkedList<E> {
+	private Node<E> top;
+	private Node<E> current;
+	private boolean isSaved;
+	private int index;
+
+	public LinkedList() {
+		this.top = null;
+		this.current = top;
+		this.isSaved = true;
+	}
+
+	public void insertBeforeCurrent(E data) {
+		Node<E> temp = new Node<E>(data, null, null);
+
+		// no list
+		if (top == null) {
+			top = temp;
+		}
+
+		else if (current == top) {
+			temp.setNext(current);
+			current.setPrev(temp);
+			top = temp;
+		}
+
+		else {
+			temp.setNext(current);
+			temp.setPrev(current.getPrev());
+			current.getPrev().setNext(temp);
+			current.setPrev(temp);
+
+		}
+		current = temp;
+		isSaved = false;
+	}
+
+	public void insertAfterCurrent(E data) {
+		Node<E> temp = new Node<E>(data, null, null);
+
+		// no list
+		if (top == null) {
+			top = temp;
+		} else if (current.getNext() == null) {
+			temp.setPrev(current);
+			current.setNext(temp);
+		} else {
+			temp.setPrev(current);
+			temp.setNext(current.getNext());
+			current.setNext(temp);
+			temp.getNext().setPrev(temp);
+		}
+		current = temp;
+		isSaved = false;
+	}
+
+	public void insertAfterLast(E data) {
+		Node<E> temp = new Node<E>(data, null, null);
+		if (top == null) {
+			top = temp;
+		} else {
+			Node<E> position = top;
+			while (position.getNext() != null) {
+				position = position.getNext();
+			}
+			temp.setPrev(position);
+
+			position.setNext(temp);
+		}
+		current = temp;
+		isSaved = false;
+	}
+
+	public void moveCurrentDown() {
+		if (top == null) {
+
+		} else if (current.getNext() != null) {
+			current = current.getNext();
+		}
+	}
+
+	public void moveCurrentUp() {
+		if (top == null) {
+
+		}
+		if (current.getPrev() != null) {
+			current = current.getPrev();
+		}
+	}
+
+	public void removeCurrent() {
+		// no list
+		if (top == null) {
+		}
+
+		// remove from the top
+		else if (current == top) {
+			if (current.getNext() != null) {
+				current.getNext().setPrev(null);
+				current = current.getNext();
+				top = current;
+				isSaved = false;
+			} else {
+				top = null;
+				isSaved = false;
+			}
+		}
+
+		else if (current.getNext() == null) {
+			current.getPrev().setNext(null);
+			current = current.getPrev();
+			isSaved = false;
+		}
+
+		else {
+			current.getPrev().setNext(current.getNext());
+			current.getNext().setPrev(current.getPrev());
+			current = current.getNext();
+			isSaved = false;
+		}
+	}
+
+	public boolean isSaved() {
+		return isSaved;
+	}
+
+	public void display() {
+		Node<E> temp = top;
+		int lineNumber = 0;
+		while (temp != null) {
+			if (temp == current) {
+				System.out.println(lineNumber++ + ": " + ">" + "\t"
+						+ temp.getData());
+			} else {
+				System.out.println(lineNumber++ + ": " + "\t" + temp.getData());
+			}
+			temp = temp.getNext();
+		}
+	}
+
+	public void display(int start, int end) {
+		Node<E> temp = top;
+		int i = 0;
+		if (temp != null && start <= end && start >= 0 && end >= 0) {
+			while (i < start) {
+				if (temp.getNext() != null) {
+					temp = temp.getNext();
+					i++;
+				} else {
+					System.out.println("Cannot start from that point");
+					return;
+				}
+			}
+			if (start == end) {
+				System.out.println(i + ": " + ">" + "\t" + temp.getData());
+			} else {
+				while (i <= end) {
+					if (temp == current) {
+						System.out.println(i++ + ": " + ">" + "\t"
+								+ temp.getData());
+					} else {
+						System.out.println(i++ + ": " + "\t" + temp.getData());
+					}
+					if (temp.getNext() == null) {
+						return;
+					}
+					temp = temp.getNext();
+				}
+			}
+		} else if (start < 0 || end < 0) {
+			System.out.println("Numbers must be positive");
+		} else if (start > end) {
+			System.out.println("Starting number must be > ending number");
+		} else
+			return;
+	}
+
+	public void removeLine(int lineNbr) {
+		// index node
+		Node<E> temp = top;
+
+		/*
+		 * makes sure the list isn't empty and we aren't 
+		 * deleting an empty node
+		 */
+		if (temp != null && lineNbr >= 0) {
+
+			// index counts how many lines change
+			int index = 0;
+
+			// gets index up to the line number
+			
+			while (index < lineNbr) {
+				if (temp.getNext() != null) {
+					temp = temp.getNext();
+					index++;
+				}
+				else if(temp.getNext() == null){
+					return;
+				}
+			}
+			// remove from the top
+			if (temp == top) {
+				if (temp.getNext() != null) {
+					temp.getNext().setPrev(null);
+					temp = temp.getNext();
+					top = temp;
+					isSaved = false;
+				} else {
+					top = null;
+					isSaved = false;
+				}
+			}
+
+			// remove from bottom
+			else if (temp.getNext() == null) {
+				temp.getPrev().setNext(null);
+				temp = temp.getPrev();
+				isSaved = false;
+			}
+
+			// remove from anywhere else
+			else {
+				temp.getPrev().setNext(temp.getNext());
+				temp.getNext().setPrev(temp.getPrev());
+				temp = temp.getNext();
+				isSaved = false;
+			}
+
+		}
+	}
+
+	public E getLine(int lineNbr) {
+		Node<E> temp = top;
+		if (temp != null && lineNbr >= 0) {
+			int index = 0;
+			while (index < lineNbr) {
+				if (temp.getNext() != null) {
+					temp = temp.getNext();
+					index++;
+				} else {
+					return (E) "";
+				}
+			}
+			return temp.getData();
+		}
+		return (E) "";
+	}
+
+	public int getIndex() {
+		return index;
+	}
+
+	public void setIndex(int index) {
+		this.index = index;
+	}
+
+	public E getCurrent() {
+		Node<E> temp = top;
+		while (temp != current) {
+			temp = temp.getNext();
+		}
+		if (temp == null) {
+			return (E) "";
+		} else
+			return temp.getData();
+	}
+
+	public Node<E> getTop() {
+		return top;
+	}
+
+	public void clearAll() {
+		current = top = null;
+	}
+
+	public void save(String fileName) {
+		PrintWriter out = null;
+		try {
+			out = new PrintWriter(new BufferedWriter(new FileWriter(fileName)));
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		Node<E> temp = top;
+		while (temp != null) {
+			out.println(temp.getData());
+			temp = temp.getNext();
+		}
+		isSaved = true;
+		System.out.println("The file is saved as " + fileName);
+		out.close();
+	}
+
+	public void load(String fileName) {
+		try {
+			Scanner fileReader = new Scanner(new File(fileName));
+			clearAll();
+			while (fileReader.hasNext()) {
+				insertAfterCurrent((E) fileReader.next());
+			}
+			current = top;
+			isSaved = true;
+		} catch (IOException error) {
+			System.out.println("Oops!  Something went wrong.");
+		}
+	}
+
+	public String toString() {
+		String list = "";
+		Node<E> temp = top;
+		while (temp != null) {
+			list += temp.getData() + "\n";
+			temp = temp.getNext();
+		}
+		return list;
+	}
+
+	public boolean equals(LinkedList<?> list) {
+		if (this.toString() == list.toString()) {
+			return true;
+		}
+		return false;
+	}
+
+	public static void main(String[] args) {
+		LinkedList<String> list = new LinkedList<String>();
+
+		list.insertAfterCurrent("1");
+		list.display();
+		System.out.println("---------------");
+		list.insertAfterCurrent("2");
+		list.display();
+		System.out.println("---------------");
+		list.insertAfterCurrent("3");
+		list.display();
+		System.out.println("---------------");
+		list.insertAfterCurrent("4");
+		list.insertAfterCurrent("5");
+		list.insertAfterCurrent("6");
+		list.insertAfterCurrent("7");
+		list.insertAfterCurrent("8");
+		list.insertAfterCurrent("9");
+		list.display();
+		System.out.println(list.getLine(1));
+		list.removeLine(4);
+		System.out.println("---------------");
+		list.display();
+		list.removeLine(0);
+		System.out.println("---------------");
+		list.display();
+		list.removeLine(7);
+		System.out.println("---------------");
+		list.display();
+		list.removeLine(6);
+		System.out.println("---------------");
+		list.display();
+	}
+}
